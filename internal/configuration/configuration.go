@@ -8,12 +8,13 @@ import (
 )
 
 type Config struct {
-	Port       string `env:"PORT" envDefault:"9090"`
-	DBHost     string `env:"DB_HOST"`
-	DBPort     string `env:"DB_PORT"`
-	DBDatabase string `env:"DB_DATABASE"`
-	DBUser     string `env:"DB_USER"`
-	DBPassword string `env:"DB_PASSWORD"`
+	Port         string `env:"PORT" envDefault:"9090"`
+	DBHost       string `env:"DB_HOST"`
+	DBPort       string `env:"DB_PORT"`
+	DBDatabase   string `env:"DB_DATABASE"`
+	DBUser       string `env:"DB_USER"`
+	DBPassword   string `env:"DB_PASSWORD"`
+	KafkaServers string `env:"KAFKA_SERVERS"`
 }
 
 func Load() (*Config, error) {
@@ -28,5 +29,6 @@ func Load() (*Config, error) {
 	config.DBHost = os.Getenv("DB_HOST")
 	config.DBPort = os.Getenv("DB_PORT")
 	config.DBDatabase = os.Getenv("DB_DATABASE")
+	config.KafkaServers = os.Getenv("KAFKA_SERVERS")
 	return &config, nil
 }

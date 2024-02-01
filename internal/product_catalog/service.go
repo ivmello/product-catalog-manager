@@ -1,8 +1,11 @@
 package product_catalog
 
+import "fmt"
+
 type ProductService interface {
 	CreateProduct(input CreateProductInput) (*CreateProductOutput, error)
 	ListProducts() ([]ListProductsOutput, error)
+	HandleMessage(msg string) error
 }
 
 type service struct {
@@ -37,4 +40,9 @@ func (s *service) ListProducts() ([]ListProductsOutput, error) {
 		output = append(output, ListProductsOutput(product))
 	}
 	return output, nil
+}
+
+func (s *service) HandleMessage(msg string) error {
+	fmt.Println("Received message: ", msg)
+	return nil
 }
