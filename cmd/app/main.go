@@ -16,7 +16,7 @@ func main() {
 	}
 	dp := dependency_provider.New(config)
 	msgChan := make(chan *sarama.ConsumerMessage)
-	go akafka.Consumer([]string{"product"}, config.KafkaServers, msgChan)
+	go akafka.Consumer([]string{config.KafkaTopics}, config.KafkaServers, msgChan)
 	go rest_api.InitializeServer(dp)
 	for msg := range msgChan {
 		dp.GetProductService().HandleMessage(string(msg.Value))

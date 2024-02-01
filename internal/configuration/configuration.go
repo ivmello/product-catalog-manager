@@ -15,6 +15,7 @@ type Config struct {
 	DBUser       string `env:"DB_USER"`
 	DBPassword   string `env:"DB_PASSWORD"`
 	KafkaServers string `env:"KAFKA_SERVERS"`
+	KafkaTopics  string `env:"KAFKA_TOPICS"`
 }
 
 func Load() (*Config, error) {
@@ -30,5 +31,6 @@ func Load() (*Config, error) {
 	config.DBPort = os.Getenv("DB_PORT")
 	config.DBDatabase = os.Getenv("DB_DATABASE")
 	config.KafkaServers = os.Getenv("KAFKA_SERVERS")
+	config.KafkaTopics = os.Getenv("KAFKA_TOPICS")
 	return &config, nil
 }
