@@ -1,4 +1,4 @@
-package product_catalog
+package product
 
 type CreateProductInput struct {
 	Title       string  `json:"title"`

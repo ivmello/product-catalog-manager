@@ -1,11 +1,10 @@
-package product_catalog_test
+package product_test
 
 import (
 	"errors"
 	"testing"
 
-	"product-catalog-manager/internal/infra/database"
-	"product-catalog-manager/internal/product_catalog"
+	"product-catalog-manager/internal/application/product"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -14,27 +13,27 @@ import (
 func TestProductService(t *testing.T) {
 	t.Run("CreateProduct", func(t *testing.T) {
 		t.Run("should create product successfully", func(t *testing.T) {
-			input := product_catalog.CreateProductInput{
+			input := product.CreateProductInput{
 				Title:       "Product 1",
 				Description: "Description 1",
 				Price:       10.0,
 			}
-			productRepository := new(database.ProductRepositoryMock)
+			productRepository := new(product.ProductRepositoryMock)
 			productRepository.On("Save", mock.Anything).Return(nil)
-			productService := product_catalog.NewProductService(productRepository)
+			productService := product.NewProductService(productRepository)
 			_, err := productService.CreateProduct(input)
 			assert.Nil(t, err)
 		})
 
 		t.Run("should return error when product repository fails to save", func(t *testing.T) {
-			input := product_catalog.CreateProductInput{
+			input := product.CreateProductInput{
 				Title:       "Product 1",
 				Description: "Description 1",
 				Price:       10.0,
 			}
-			productRepository := new(database.ProductRepositoryMock)
+			productRepository := new(product.ProductRepositoryMock)
 			productRepository.On("Save", mock.Anything).Return(errors.New("error on save product"))
-			productService := product_catalog.NewProductService(productRepository)
+			productService := product.NewProductService(productRepository)
 			_, err := productService.CreateProduct(input)
 			assert.Equal(t, "error on save product", err.Error())
 		})
@@ -42,12 +41,12 @@ func TestProductService(t *testing.T) {
 
 	t.Run("ListProducts", func(t *testing.T) {
 		t.Run("should list a list of products", func(t *testing.T) {
-			productRepository := new(database.ProductRepositoryMock)
-			productRepository.On("FindAll").Return([]product_catalog.Product{
+			productRepository := new(product.ProductRepositoryMock)
+			productRepository.On("FindAll").Return([]product.Product{
 				{ID: "1", Title: "Product 1", Description: "Description 1", Price: 10.0},
 				{ID: "2", Title: "Product 2", Description: "Description 2", Price: 20.0},
 			}, nil)
-			productService := product_catalog.NewProductService(productRepository)
+			productService := product.NewProductService(productRepository)
 			products, err := productService.ListProducts()
 			assert.Nil(t, err)
 			assert.Equal(t, 2, len(products))

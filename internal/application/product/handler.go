@@ -1,6 +1,8 @@
-package product_catalog
+package product
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 type ProductHandler interface {
 	CreateProduct(ctx *fiber.Ctx) error

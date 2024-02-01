@@ -1,9 +1,9 @@
 package dependency_provider
 
 import (
-	"product-catalog-manager/internal/configuration"
+	"product-catalog-manager/internal/application/configuration"
+	"product-catalog-manager/internal/application/product"
 	"product-catalog-manager/internal/infra/database"
-	"product-catalog-manager/internal/product_catalog"
 	"product-catalog-manager/pkg/mongodb"
 )
 
@@ -19,11 +19,11 @@ func (d *DependencyProvider) GetConfig() *configuration.Config {
 	return d.config
 }
 
-func (d *DependencyProvider) GetProductService() product_catalog.ProductService {
-	return product_catalog.NewProductService(d.GetProductRepository())
+func (d *DependencyProvider) GetProductService() product.ProductService {
+	return product.NewProductService(d.GetProductRepository())
 }
 
-func (d *DependencyProvider) GetProductRepository() product_catalog.ProductRepository {
+func (d *DependencyProvider) GetProductRepository() product.ProductRepository {
 	client, context, err := mongodb.Connect(mongodb.MongoDBConfig{
 		User:     d.GetConfig().DBUser,
 		Password: d.GetConfig().DBPassword,

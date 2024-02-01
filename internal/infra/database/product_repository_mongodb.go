@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"product-catalog-manager/internal/product_catalog"
+	"product-catalog-manager/internal/application/product"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,14 +21,14 @@ type ProductRepository struct {
 func NewProductRepository(
 	context context.Context,
 	collection *mongo.Collection,
-) product_catalog.ProductRepository {
+) product.ProductRepository {
 	return &ProductRepository{
 		context:    context,
 		collection: collection,
 	}
 }
 
-func (r *ProductRepository) Save(product *product_catalog.Product) error {
+func (r *ProductRepository) Save(product *product.Product) error {
 	filter := bson.M{
 		"identifier": product.ID,
 	}
@@ -44,14 +44,14 @@ func (r *ProductRepository) Save(product *product_catalog.Product) error {
 	return nil
 }
 
-func (r *ProductRepository) FindAll() ([]product_catalog.Product, error) {
+func (r *ProductRepository) FindAll() ([]product.Product, error) {
 	var result bson.M
 	cur, err := r.collection.Find(r.context, bson.D{{}}, options.Find())
 	if err != nil {
 		return nil, err
 	}
 	defer cur.Close(r.context)
-	var products []product_catalog.Product
+	var products []product.Product
 	for cur.Next(r.context) {
 		err = cur.Decode(&result)
 		if err == mongo.ErrNoDocuments {
@@ -69,12 +69,12 @@ func (r *ProductRepository) FindAll() ([]product_catalog.Product, error) {
 	return products, err
 }
 
-func (r *ProductRepository) castBSONToProduct(result bson.M) (*product_catalog.Product, error) {
+func (r *ProductRepository) castBSONToProduct(result bson.M) (*product.Product, error) {
 	bytes, err := json.Marshal(result)
 	if err != nil {
 		return nil, err
 	}
-	product := new(product_catalog.Product)
+	product := new(product.Product)
 	err = json.Unmarshal(bytes, &product)
 	if err != nil {
 		return nil, err

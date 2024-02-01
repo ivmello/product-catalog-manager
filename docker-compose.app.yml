@@ -11,18 +11,3 @@ services:
       - 9090:9090
     volumes:
       - .:/app
-    depends_on:
-      - database
-  database:
-    container_name: db
-    image: mongo:4.4
-    ports:
-      - 27027:27027
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    command: --port 27027 --quiet --logpath /dev/null
-    volumes:
-      - mongodb-data:/data/db
-volumes:
-  mongodb-data:

@@ -1,11 +1,29 @@
 version: "3.7"
 services:
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.4
+    ports:
+      - 27027:27027
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    command: --port 27027 --quiet --logpath /dev/null
+    volumes:
+      - mongodb-data:/data/mongodb
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
     container_name: zookeeper
     hostname: zookeeper
     ports:
-    - 2181:2181
+      - 2181:2181
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -47,3 +65,5 @@ services:
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
+volumes:
+  mongodb-data:
