@@ -8,16 +8,15 @@ The project is divided in 3 parts:
 - AWS integration for JSON storage (S3)
 
 ## Initial setup
-To run the project you need to have docker and docker-compose installed.
+To run the project you need to have docker and docker-compose installed. Infra is started in daemon mode.
 ```shell
-docker-compose -f docker-compose.infra.yml up
+./start-infra.sh
 ```
-and after initialization run:
-To run the project you need to have docker and docker-compose installed.
+and after initialization run (a few seconds after):
 ```shell
-docker-compose -f docker-compose.app.yml up
+./start-dev.sh
 ```
-Application docker is separated from infra to allow reload without restarting the entire infra.
+Application docker is separated from infra to allow reload without restarting the entire infrastructure services.
 
 ## Kafka
 Kafka Management (control center):

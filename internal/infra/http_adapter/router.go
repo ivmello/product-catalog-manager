@@ -1,4 +1,4 @@
-package http
+package http_adapter
 
 import (
 	"product-catalog-manager/internal/application/dependency_provider"

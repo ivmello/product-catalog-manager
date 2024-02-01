@@ -10,7 +10,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=password
     command: --port 27027 --quiet --logpath /dev/null
     volumes:
-      - mongodb-data:/data/mongodb
+      - mongodb-data:/data/db
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq

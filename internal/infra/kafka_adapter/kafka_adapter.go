@@ -1,4 +1,4 @@
-package akafka
+package kafka_adapter
 
 import (
 	"github.com/IBM/sarama"
