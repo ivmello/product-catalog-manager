@@ -18,6 +18,9 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    volumes:
+        - rabbitmq-data:/var/lib/rabbitmq/
+        - rabbitmq-log:/var/log/rabbitmq
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
     container_name: zookeeper
@@ -27,6 +30,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    volumes: 
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-log:/var/lib/zookeeper/log
   kafka:
     image: confluentinc/cp-kafka:7.3.0
     hostname: kafka
@@ -50,6 +56,8 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       CONFLUENT_METRICS_ENABLE: 'false'
       CONFLUENT_SUPORT_CUSTOMER_ID: 'anonymous'
+    volumes: 
+      - kafka-data:/var/lib/kafka/data
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.3.0
     hostname: control-center
@@ -67,3 +75,8 @@ services:
       PORT: 9021
 volumes:
   mongodb-data:
+  rabbitmq-data:
+  rabbitmq-log:
+  zookeeper-data:
+  zookeeper-log:
+  kafka-data:

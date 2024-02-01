@@ -10,10 +10,14 @@ import (
 	"github.com/wagslane/go-rabbitmq"
 )
 
-type service struct{}
+type service struct {
+	dp dependency_provider.DependencyProvider
+}
 
 func NewRabbitMQ(db dependency_provider.DependencyProvider) message_broker.MessageBroker {
-	return service{}
+	return service{
+		dp: db,
+	}
 }
 
 func (s service) Consumer(destinations []string, msgChan chan string) error {
@@ -24,18 +28,17 @@ func (s service) Consumer(destinations []string, msgChan chan string) error {
 func (s service) Producer(msg string, destinations []string) error {
 	fmt.Println("producer")
 	conn, err := rabbitmq.NewConn(
-		"amqp://guest:guest@localhost",
+		"amqp://guest:guest@rabbitmq:5672",
 		rabbitmq.WithConnectionOptionsLogging,
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-
 	publisher, err := rabbitmq.NewPublisher(
 		conn,
 		rabbitmq.WithPublisherOptionsLogging,
-		rabbitmq.WithPublisherOptionsExchangeName("events"),
+		rabbitmq.WithPublisherOptionsExchangeName("product_catalog_manager"),
 		rabbitmq.WithPublisherOptionsExchangeDeclare,
 	)
 	if err != nil {
