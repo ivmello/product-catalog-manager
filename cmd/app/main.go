@@ -5,8 +5,7 @@ import (
 	"product-catalog-manager/internal/application/dependency_provider"
 	"product-catalog-manager/internal/infra/http_adapter"
 	"product-catalog-manager/internal/infra/kafka_adapter"
-
-	"github.com/IBM/sarama"
+	"product-catalog-manager/internal/infra/rabbitmq_adapter"
 )
 
 func main() {
@@ -15,10 +14,27 @@ func main() {
 		panic(err)
 	}
 	dp := dependency_provider.New(config)
-	msgChan := make(chan *sarama.ConsumerMessage)
-	go kafka_adapter.Consumer([]string{config.KafkaTopics}, config.KafkaServers, msgChan)
+	msgChan := make(chan string)
+	go kafkaConsumer(dp, msgChan)
+	go rabbitMQConsumer(dp, msgChan)
 	go http_adapter.InitializeServer(dp)
 	for msg := range msgChan {
-		dp.GetProductService().HandleMessage(string(msg.Value))
+		dp.GetProductService().HandleMessage(msg)
 	}
+}
+
+func kafkaConsumer(dp *dependency_provider.DependencyProvider, msgChan chan string) {
+	kafkaAdapter := kafka_adapter.NewKafkaAdapter(dp)
+	kafkaAdapter.Consumer(kafka_adapter.KafkaConfig{
+		Topics: []string{"products"},
+	}, msgChan)
+}
+
+func rabbitMQConsumer(dp *dependency_provider.DependencyProvider, msgChan chan string) {
+	rabbitmqAdapter := rabbitmq_adapter.NewRabbitMQAdapter(dp)
+	rabbitmqAdapter.Consumer(rabbitmq_adapter.RabbitMQConfig{
+		ExchangeName: "amq.topic",
+		QueueName:    "product_catalog_manager",
+		RoutingKey:   "products",
+	}, msgChan)
 }

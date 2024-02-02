@@ -8,14 +8,14 @@ import (
 )
 
 type Config struct {
-	Port         string `env:"PORT" envDefault:"9090"`
-	DBHost       string `env:"DB_HOST"`
-	DBPort       string `env:"DB_PORT"`
-	DBDatabase   string `env:"DB_DATABASE"`
-	DBUser       string `env:"DB_USER"`
-	DBPassword   string `env:"DB_PASSWORD"`
-	KafkaServers string `env:"KAFKA_SERVERS"`
-	KafkaTopics  string `env:"KAFKA_TOPICS"`
+	Port        string `env:"PORT" envDefault:"9090"`
+	DBHost      string `env:"DB_HOST"`
+	DBPort      string `env:"DB_PORT"`
+	DBDatabase  string `env:"DB_DATABASE"`
+	DBUser      string `env:"DB_USER"`
+	DBPassword  string `env:"DB_PASSWORD"`
+	KafkaURI    string `env:"KAFKA_URI"`
+	RabbitMQURI string `env:"RABBIT_MQ_URI"`
 }
 
 func Load() (*Config, error) {
@@ -30,7 +30,7 @@ func Load() (*Config, error) {
 	config.DBHost = os.Getenv("DB_HOST")
 	config.DBPort = os.Getenv("DB_PORT")
 	config.DBDatabase = os.Getenv("DB_DATABASE")
-	config.KafkaServers = os.Getenv("KAFKA_SERVERS")
-	config.KafkaTopics = os.Getenv("KAFKA_TOPICS")
+	config.KafkaURI = os.Getenv("KAFKA_URI")
+	config.RabbitMQURI = os.Getenv("RABBIT_MQ_URI")
 	return &config, nil
 }

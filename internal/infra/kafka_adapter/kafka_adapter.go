@@ -1,10 +1,27 @@
 package kafka_adapter
 
 import (
+	"product-catalog-manager/internal/application/dependency_provider"
+	"product-catalog-manager/internal/application/message_broker"
+
 	"github.com/IBM/sarama"
 )
 
-func consumePartition(consumer sarama.Consumer, topics []string, partition int32, msgChan chan *sarama.ConsumerMessage) {
+type KafkaConfig struct {
+	Topics []string
+}
+
+type adapter struct {
+	dp *dependency_provider.DependencyProvider
+}
+
+func NewKafkaAdapter(dp *dependency_provider.DependencyProvider) message_broker.MessageBroker {
+	return &adapter{
+		dp: dp,
+	}
+}
+
+func consumePartition(consumer sarama.Consumer, topics []string, partition int32, msgChan chan string) {
 	partitionConsumer, err := consumer.ConsumePartition(topics[0], partition, sarama.OffsetNewest)
 	if err != nil {
 		panic(err)
@@ -12,17 +29,18 @@ func consumePartition(consumer sarama.Consumer, topics []string, partition int32
 	defer partitionConsumer.Close()
 	channel := partitionConsumer.Messages()
 	for msg := range channel {
-		msgChan <- msg
+		msgChan <- string(msg.Value)
 	}
 }
 
-func Consumer(topics []string, servers string, msgChan chan *sarama.ConsumerMessage) {
+func (a *adapter) Consumer(params interface{}, msgChan chan string) {
 	config := sarama.NewConfig()
-	consumer, err := sarama.NewConsumer([]string{servers}, config)
+	consumerParams := params.(KafkaConfig)
+	consumer, err := sarama.NewConsumer([]string{a.dp.GetConfig().KafkaURI}, config)
 	if err != nil {
 		panic(err)
 	}
-	partitions, err := consumer.Partitions(topics[0])
+	partitions, err := consumer.Partitions(consumerParams.Topics[0])
 	if err != nil {
 		panic(err)
 	}
@@ -30,6 +48,10 @@ func Consumer(topics []string, servers string, msgChan chan *sarama.ConsumerMess
 		panic("No partitions found")
 	}
 	for _, partition := range partitions {
-		consumePartition(consumer, topics, partition, msgChan)
+		consumePartition(consumer, consumerParams.Topics, partition, msgChan)
 	}
+}
+
+func (a *adapter) Producer(params interface{}, msgChan chan string) {
+	panic("not implemented")
 }

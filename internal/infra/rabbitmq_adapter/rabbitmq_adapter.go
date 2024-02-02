@@ -1,7 +1,6 @@
 package rabbitmq_adapter
 
 import (
-	"fmt"
 	"log"
 
 	"product-catalog-manager/internal/application/dependency_provider"
@@ -10,50 +9,51 @@ import (
 	"github.com/wagslane/go-rabbitmq"
 )
 
-type service struct {
-	dp dependency_provider.DependencyProvider
+type RabbitMQConfig struct {
+	ExchangeName string
+	QueueName    string
+	RoutingKey   string
+	Message      string
 }
 
-func NewRabbitMQ(db dependency_provider.DependencyProvider) message_broker.MessageBroker {
-	return service{
-		dp: db,
+type adapter struct {
+	dp *dependency_provider.DependencyProvider
+}
+
+func NewRabbitMQAdapter(dp *dependency_provider.DependencyProvider) message_broker.MessageBroker {
+	return &adapter{
+		dp: dp,
 	}
 }
 
-func (s service) Consumer(destinations []string, msgChan chan string) error {
-	fmt.Println("consumer")
-	return nil
-}
-
-func (s service) Producer(msg string, destinations []string) error {
-	fmt.Println("producer")
+func (a *adapter) Consumer(params interface{}, msgChan chan string) {
+	config := params.(RabbitMQConfig)
 	conn, err := rabbitmq.NewConn(
-		"amqp://guest:guest@rabbitmq:5672",
+		a.dp.GetConfig().RabbitMQURI,
 		rabbitmq.WithConnectionOptionsLogging,
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-	publisher, err := rabbitmq.NewPublisher(
+	consumer, err := rabbitmq.NewConsumer(
 		conn,
-		rabbitmq.WithPublisherOptionsLogging,
-		rabbitmq.WithPublisherOptionsExchangeName("product_catalog_manager"),
-		rabbitmq.WithPublisherOptionsExchangeDeclare,
+		func(d rabbitmq.Delivery) rabbitmq.Action {
+			msgChan <- string(d.Body)
+			return rabbitmq.Ack
+		},
+		config.QueueName,
+		rabbitmq.WithConsumerOptionsRoutingKey(config.RoutingKey),
+		rabbitmq.WithConsumerOptionsExchangeName(config.ExchangeName),
+		rabbitmq.WithConsumerOptionsQueueDurable,
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer publisher.Close()
+	defer consumer.Close()
+	select {}
+}
 
-	err = publisher.Publish(
-		[]byte("hello, world"),
-		[]string{"my_routing_key"},
-		rabbitmq.WithPublishOptionsContentType("application/json"),
-		rabbitmq.WithPublishOptionsExchange("events"),
-	)
-	if err != nil {
-		log.Println(err)
-	}
-	return nil
+func (s *adapter) Producer(params interface{}, msgChan chan string) {
+	return
 }

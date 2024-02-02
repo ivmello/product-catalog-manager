@@ -22,11 +22,12 @@ ENTRYPOINT ["air", "-c", "/root/.air.toml"]
 FROM base AS builder
 ARG SERVICE_PATH
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -o go-service "./cmd/${SERVICE_PATH}"
+RUN CGO_ENABLED=0 GOOS=linux go build -a -o go-service "./cmd/${SERVICE_PATH}/main.go"
 ##
 ## Stage: Release
 ##
 FROM scratch as release
 WORKDIR /release
+COPY ./.env ./.env
 COPY --from=builder /app/go-service .
 ENTRYPOINT ["/release/go-service"]

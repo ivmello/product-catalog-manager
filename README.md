@@ -10,11 +10,11 @@ The project is divided in 3 parts:
 ## Initial setup
 To run the project you need to have docker and docker-compose installed. Infra is started in daemon mode.
 ```shell
-./start-infra.sh
+docker-compose -f docker/infra.yml up -d
 ```
-and after initialization run (a few seconds after):
+and after initialization (a few seconds after, or minutes if it's the first time) run:
 ```shell
-./start-dev.sh
+docker-compose -f docker/app.yml up
 ```
 Application docker is separated from infra to allow reload without restarting the entire infrastructure services.
 
