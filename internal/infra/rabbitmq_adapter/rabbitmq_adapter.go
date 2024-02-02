@@ -26,7 +26,7 @@ func NewRabbitMQAdapter(dp *dependency_provider.DependencyProvider) message_brok
 	}
 }
 
-func (a *adapter) Consumer(params interface{}, msgChan chan string) {
+func (a *adapter) Consumer(params interface{}, msgChan chan []byte) {
 	config := params.(RabbitMQConfig)
 	conn, err := rabbitmq.NewConn(
 		a.dp.GetConfig().RabbitMQURI,
@@ -39,7 +39,7 @@ func (a *adapter) Consumer(params interface{}, msgChan chan string) {
 	consumer, err := rabbitmq.NewConsumer(
 		conn,
 		func(d rabbitmq.Delivery) rabbitmq.Action {
-			msgChan <- string(d.Body)
+			msgChan <- d.Body
 			return rabbitmq.Ack
 		},
 		config.QueueName,
@@ -54,6 +54,6 @@ func (a *adapter) Consumer(params interface{}, msgChan chan string) {
 	select {}
 }
 
-func (s *adapter) Producer(params interface{}, msgChan chan string) {
+func (s *adapter) Producer(params interface{}, msgChan chan []byte) {
 	return
 }

@@ -5,7 +5,7 @@ import "fmt"
 type ProductService interface {
 	CreateProduct(input CreateProductInput) (*CreateProductOutput, error)
 	ListProducts() ([]ListProductsOutput, error)
-	HandleMessage(msg string) error
+	HandleMessage(msg []byte) error
 }
 
 type service struct {
@@ -42,7 +42,7 @@ func (s *service) ListProducts() ([]ListProductsOutput, error) {
 	return output, nil
 }
 
-func (s *service) HandleMessage(msg string) error {
-	fmt.Println("Received message: ", msg)
+func (s *service) HandleMessage(msg []byte) error {
+	fmt.Println("Received message: ", string(msg))
 	return nil
 }

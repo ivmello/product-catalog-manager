@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 	dp := dependency_provider.New(config)
-	msgChan := make(chan string)
+	msgChan := make(chan []byte)
 	go kafkaConsumer(dp, msgChan)
 	go rabbitMQConsumer(dp, msgChan)
 	go http_adapter.InitializeServer(dp)
@@ -23,14 +23,14 @@ func main() {
 	}
 }
 
-func kafkaConsumer(dp *dependency_provider.DependencyProvider, msgChan chan string) {
+func kafkaConsumer(dp *dependency_provider.DependencyProvider, msgChan chan []byte) {
 	kafkaAdapter := kafka_adapter.NewKafkaAdapter(dp)
 	kafkaAdapter.Consumer(kafka_adapter.KafkaConfig{
 		Topics: []string{"products"},
 	}, msgChan)
 }
 
-func rabbitMQConsumer(dp *dependency_provider.DependencyProvider, msgChan chan string) {
+func rabbitMQConsumer(dp *dependency_provider.DependencyProvider, msgChan chan []byte) {
 	rabbitmqAdapter := rabbitmq_adapter.NewRabbitMQAdapter(dp)
 	rabbitmqAdapter.Consumer(rabbitmq_adapter.RabbitMQConfig{
 		ExchangeName: "amq.topic",

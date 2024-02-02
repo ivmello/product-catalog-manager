@@ -21,7 +21,7 @@ func NewKafkaAdapter(dp *dependency_provider.DependencyProvider) message_broker.
 	}
 }
 
-func consumePartition(consumer sarama.Consumer, topics []string, partition int32, msgChan chan string) {
+func consumePartition(consumer sarama.Consumer, topics []string, partition int32, msgChan chan []byte) {
 	partitionConsumer, err := consumer.ConsumePartition(topics[0], partition, sarama.OffsetNewest)
 	if err != nil {
 		panic(err)
@@ -29,11 +29,11 @@ func consumePartition(consumer sarama.Consumer, topics []string, partition int32
 	defer partitionConsumer.Close()
 	channel := partitionConsumer.Messages()
 	for msg := range channel {
-		msgChan <- string(msg.Value)
+		msgChan <- msg.Value
 	}
 }
 
-func (a *adapter) Consumer(params interface{}, msgChan chan string) {
+func (a *adapter) Consumer(params interface{}, msgChan chan []byte) {
 	config := sarama.NewConfig()
 	consumerParams := params.(KafkaConfig)
 	consumer, err := sarama.NewConsumer([]string{a.dp.GetConfig().KafkaURI}, config)
@@ -52,6 +52,6 @@ func (a *adapter) Consumer(params interface{}, msgChan chan string) {
 	}
 }
 
-func (a *adapter) Producer(params interface{}, msgChan chan string) {
+func (a *adapter) Producer(params interface{}, msgChan chan []byte) {
 	panic("not implemented")
 }
