@@ -22,7 +22,7 @@ func NewKafkaAdapter(dp *dependency_provider.DependencyProvider) message_broker.
 }
 
 func consumePartition(consumer sarama.Consumer, topics []string, partition int32, msgChan chan []byte) {
-	partitionConsumer, err := consumer.ConsumePartition(topics[0], partition, sarama.OffsetNewest)
+	partitionConsumer, err := consumer.ConsumePartition(topics[0], partition, sarama.OffsetOldest)
 	if err != nil {
 		panic(err)
 	}

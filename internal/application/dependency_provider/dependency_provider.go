@@ -50,3 +50,7 @@ func (d *DependencyProvider) GetProductRepository() product.ProductRepository {
 	collection := client.Database(d.GetConfig().DBDatabase).Collection(mongodb_adapter.ProductRepositoryCollection)
 	return mongodb_adapter.NewProductRepository(context, collection)
 }
+
+// func (d *DependencyProvider) GetKafkaAdapter() message_broker.MessageBroker {
+// 	return kafka_adapter.NewKafkaAdapter(d)
+// }

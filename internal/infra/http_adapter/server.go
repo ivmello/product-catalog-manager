@@ -8,8 +8,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func InitializeServer(dp *dependency_provider.DependencyProvider) {
+func InitializeServer(dp *dependency_provider.DependencyProvider, msgChan <-chan []byte) {
 	app := fiber.New()
-	RegisterRouter(app, dp)
+	RegisterRouter(app, dp, msgChan)
 	log.Fatal(app.Listen(":" + dp.GetConfig().Port))
 }

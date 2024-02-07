@@ -6,6 +6,7 @@ type ProductService interface {
 	CreateProduct(input CreateProductInput) (*CreateProductOutput, error)
 	ListProducts() ([]ListProductsOutput, error)
 	HandleMessage(msg []byte) error
+	SendMessage(msg []byte) error
 }
 
 type service struct {
@@ -44,5 +45,10 @@ func (s *service) ListProducts() ([]ListProductsOutput, error) {
 
 func (s *service) HandleMessage(msg []byte) error {
 	fmt.Println("Received message: ", string(msg))
+	return nil
+}
+
+func (s *service) SendMessage(msg []byte) error {
+	// implementar
 	return nil
 }

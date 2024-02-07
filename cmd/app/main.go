@@ -17,10 +17,11 @@ func main() {
 	msgChan := make(chan []byte)
 	go kafkaConsumer(dp, msgChan)
 	go rabbitMQConsumer(dp, msgChan)
-	go http_adapter.InitializeServer(dp)
-	for msg := range msgChan {
-		dp.GetProductService().HandleMessage(msg)
-	}
+	go http_adapter.InitializeServer(dp, msgChan)
+	select {}
+	// for msg := range msgChan {
+	// 	dp.GetProductService().HandleMessage(msg)
+	// }
 }
 
 func kafkaConsumer(dp *dependency_provider.DependencyProvider, msgChan chan []byte) {
